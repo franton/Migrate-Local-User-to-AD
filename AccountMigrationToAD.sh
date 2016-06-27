@@ -112,7 +112,7 @@ EOF
 	
 		while [ "$AllOk" = "false" ]
 		do
-			arewesure=$( CS "msgbox" "." "Computer needs to close all apps and logout" "Logout Warning" "Logout" )
+			arewesure=$( CD "msgbox" "." "Computer needs to close all apps and logout" "Logout Warning" "Logout" )
 			
 			if [ "$arewesure" = "1" ];
 			then
