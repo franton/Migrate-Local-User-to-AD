@@ -96,8 +96,8 @@ cat <<'EOF' >> /Library/LaunchAgents/com.cs.accountmigrate-bootstrap.plist
 </plist>
 EOF
 
-	/usr/sbin/chown root:wheel /Library/LaunchAgent/com.cs.accountmigrate-bootstrap.plist
-	/bin/chmod 644 /Library/LaunchAgent/com.cs.accountmigrate-bootstrap.plist
+	/usr/sbin/chown root:wheel /Library/LaunchAgents/com.cs.accountmigrate-bootstrap.plist
+	/bin/chmod 644 /Library/LaunchAgents/com.cs.accountmigrate-bootstrap.plist
 
 	cp "$0" /private/tmp/AccountMigrationToAd.sh
 	/usr/sbin/chown root:wheel /private/tmp/AccountMigrationToAd.sh
