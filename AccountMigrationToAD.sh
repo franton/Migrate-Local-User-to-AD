@@ -47,7 +47,7 @@ AreWeADBound()
 {
 	adbound=$( /usr/bin/dscl localhost -list . | grep "Active Directory" )
 	
-	if [ "${check4AD}" != "Active Directory" ];
+	if [ "${adbound}" != "Active Directory" ];
 	then
 		/bin/echo "This machine is not bound to Active Directory."
 		adbound="no"
