@@ -26,7 +26,7 @@ CD()
 	local button2="$6"
 	local items="$7"
 
-	case $type
+	case $type in
 		inputbox)
 			"$cdialogbin" "$type" --title "$title" --informative-text "$title2" --text "$title" --icon-file "$icon" --string-output --float --button1 "$button1"
 		;;
@@ -49,7 +49,7 @@ AreWeADBound()
 	
 	if [ "${check4AD}" != "Active Directory" ];
 	then
-		/bin//bin/echo "This machine is not bound to Active Directory."
+		/bin/echo "This machine is not bound to Active Directory."
 		adbound="no"
 		errorcode=1
 	else
