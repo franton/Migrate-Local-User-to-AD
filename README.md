@@ -4,4 +4,5 @@ This script is to help migrate local user accounts to Active Directory accounts.
 
 Script is meant to be run as root via a Casper Policy. It also requires CocoaDialog for all the user interaction.
 
-Consider this to be highly unstable and a work in progress!
+Last update 27th June 2016:
+WARNING: Consider this to be a work in progress! DO NOT USE IN PRODUCTION!
