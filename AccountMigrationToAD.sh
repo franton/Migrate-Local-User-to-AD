@@ -39,7 +39,7 @@ CD()
 			"$cdialogbin" "type" --title "$title" --text "$text" --icon-file "$icon" --items "$items" --string-output --button1 "$button1"
 		;;
 		*)
-			echo "Invalid CocoaDialog mode selected: $type"
+			/bin/echo "Invalid CocoaDialog mode selected: $type"
 		;;
 	esac
 }
@@ -51,21 +51,21 @@ AreWeADBound()
 	
 	if [ "${check4AD}" != "Active Directory" ];
 	then
-		echo "This machine is not bound to Active Directory."
+		/bin//bin/echo "This machine is not bound to Active Directory."
 		adbound="no"
 		errorcode=1
 	else
-		echo "Bound to Active Directory. Proceeding."
+		/bin/echo "Bound to Active Directory. Proceeding."
 		adbound="yes"
 	fi
 	
 	# Find the domain name here too
-	domain=$( dsconfigad -show | grep "Active Directory Domain" | awk '{print substr ($0, index($0, $5)) }' )
+	domain=$( /usr/sbin/dsconfigad -show | grep "Active Directory Domain" | awk '{print substr ($0, index($0, $5)) }' )
 }
 
 DoLocalAccountsExist()
 {
-	accounts=$( dscl . list /Users UniqueID | awk '$2 > 500 && $2 < 1000 { print $1 }' )
+	accounts=$( /usr/bin/dscl . list /Users UniqueID | awk '$2 > 500 && $2 < 1000 { print $1 }' )
 
 	if [ "$accounts" = "" ]];
 	then
@@ -93,18 +93,17 @@ cat <<'EOF' >> /Library/LaunchAgent/com.cs.accountmigrate-bootstrap.plist
 	<key>ProgramArguments</key>
 	<array>
         <string>/private/tmp/AccountMigrationToAd.sh</string>
-        <string>'-bootstrap'</string>
 	</array>
 </dict>
 </plist>
 EOF
 
-	chown root:wheel /Library/LaunchAgent/com.cs.accountmigrate-bootstrap.plist
-	chmod 644 /Library/LaunchAgent/com.cs.accountmigrate-bootstrap.plist
+	/usr/sbin/chown root:wheel /Library/LaunchAgent/com.cs.accountmigrate-bootstrap.plist
+	/bin/chmod 644 /Library/LaunchAgent/com.cs.accountmigrate-bootstrap.plist
 
 	cp "$0" /private/tmp/AccountMigrationToAd.sh
-	chown root:wheel /private/tmp/AccountMigrationToAd.sh
-	chmod 700 /private/tmp/AccountMigrationToAd.sh
+	/usr/sbin/chown root:wheel /private/tmp/AccountMigrationToAd.sh
+	/bin/chmod 700 /private/tmp/AccountMigrationToAd.sh
 
 	# If user logged in, warn, quit all apps and logout for user.
 	
@@ -124,16 +123,16 @@ EOF
 		done
 		
 		# Kill all the apps and force a logout
-		applist="$(sudo -u "$loggedinuser" osascript -e "tell application \"System Events\" to return displayed name of every application process whose (background only is false and displayed name is not \"Finder\")")"
+		applist="$(/usr/bin/sudo -u "$loggedinuser" osascript -e "tell application \"System Events\" to return displayed name of every application process whose (background only is false and displayed name is not \"Finder\")")"
 		
-		applistarray=$(echo "$applist" | sed -e 's/^/\"/' -e 's/$/\"/' -e 's/, /\" \"/g')
+		applistarray=$(/bin/echo "$applist" | sed -e 's/^/\"/' -e 's/$/\"/' -e 's/, /\" \"/g')
 		eval set "$applistarray"
 		for appname in "$@"
 		do
-			sudo -u "$loggedinuser" osascript -e "ignoring application responses" -e "tell application \"$appname\" to quit" -e "end ignoring"
+			/usr/bin/sudo -u "$loggedinuser" osascript -e "ignoring application responses" -e "tell application \"$appname\" to quit" -e "end ignoring"
 		done
 		
-		osascript -e "ignoring application responses" -e "tell application \"loginwindow\" to $(printf \\xc2\\xab)event aevtrlgo$(printf \\xc2\\xbb)" -e "end ignoring"
+		/usr/sbin/osascript -e "ignoring application responses" -e "tell application \"loginwindow\" to $(printf \\xc2\\xab)event aevtrlgo$(printf \\xc2\\xbb)" -e "end ignoring"
 	fi
 
 }
@@ -152,7 +151,7 @@ GetADAccountDetails()
 		adusername=$( CD "inputbox" "AD Account" "Please enter your AD Username:" "" "Ok" )
 		adpassword=$( CD "inputbox" "AD Password" "Please enter your AD Password:" "" "Ok" )
 	
-		arewesure=$( CS "msgbox" "$adusername @adpassword" "Is this information correct?" "Warning" "Yes" "No" )
+		arewesure=$( CD "msgbox" "$adusername @adpassword" "Is this information correct?" "Warning" "Yes" "No" )
 		
 		if [ "$arewesure" = "1" ];
 		then
@@ -164,42 +163,42 @@ GetADAccountDetails()
 CreateADAccount()
 {
 	# Make new user folder with correct permissions in /Users
-	mkdir /Users/$adusername
-	chown -R $adusername /Users/$adusername
+	/bin/mkdir /Users/$adusername
+	/usr/sbin/chown -R $adusername /Users/$adusername
 
 	# Use an macOS command to create the mobile account user record
 	/System/Library/CoreServices/ManagedClient.app/Contents/Resources/createmobileaccount –v –P –n $adusername
 
 	# The user home folder we created will be totally blank. Get the OS to copy from the User Template.
 	# Start by deleting the folder we just created (!) then using another OS tool to do the work.
-	rm -r /Users/$adusername
-	createhomedir -c -u $adusername
+	/bin/rm -r /Users/$adusername
+	/usr/sbin/createhomedir -c -u $adusername
 }
 
 MigrateAccount()
 {
 	# Move existing user data
-	mv -f /Users/$username/ /Users/$adusername/
+	/bin/mv -f /Users/$username/ /Users/$adusername/
 
 	# Fix new user folder permissions
 
-	chown -R $adusername:"$domain\Domain Users" /Users/$adusername
-	chmod 755 /Users/$username
-	chmod -R 700 /Users/$adusername/Desktop/
-	chmod -R 700 /Users/$adusername/Documents/
-	chmod -R 700 /Users/$adusername/Downloads/
-	chmod -R 700 /Users/$adusername/Library/
-	chmod -R 700 /Users/$adusername/Movies/
-	chmod -R 700 /Users/$adusername/Pictures/
-	chmod 755 /Users/$adusername/Public/
-	chmod -R 733 /Users/$adusername/Public/Drop\ Box/
+	/usr/sbin/chown -R $adusername:"$domain\Domain Users" /Users/$adusername
+	/bin/chmod 755 /Users/$username
+	/bin/chmod -R 700 /Users/$adusername/Desktop/
+	/bin/chmod -R 700 /Users/$adusername/Documents/
+	/bin/chmod -R 700 /Users/$adusername/Downloads/
+	/bin/chmod -R 700 /Users/$adusername/Library/
+	/bin/chmod -R 700 /Users/$adusername/Movies/
+	/bin/chmod -R 700 /Users/$adusername/Pictures/
+	/bin/chmod 755 /Users/$adusername/Public/
+	/bin/chmod -R 733 /Users/$adusername/Public/Drop\ Box/
 
 	# Delete original account
 	/usr/bin/dscl . -delete "/Users/$username"
-	rm -rf /Users/$username
+	/bin/rm -rf /Users/$username
 
 	# Add new user to FileVault 2
-	fdesetup add -usertoadd $adusername
+	/usr/bin/fdesetup add -usertoadd $adusername
 	
 	/usr/bin/expect <<EOF
 	expect "Enter a password for '/', or the recovery key:"
@@ -207,18 +206,18 @@ MigrateAccount()
 	expect "Enter the password for the added user '$aduser':"
 	send "$adpassword\r"
 	EOF
-	
+
 }
 
 CleanUpBootstrap()
 {
-	srm /Library/LaunchAgent/com.cs.accountmigrate-bootstrap.plist
-	srm /private/tmp/AccountMigrationToAd.sh
+	/usr/bin/srm /Library/LaunchAgent/com.cs.accountmigrate-bootstrap.plist
+	/usr/bin/srm /private/tmp/AccountMigrationToAd.sh
 }
 
 Reboot()
 {
-	reboot
+	/sbin/reboot
 }
 
 # Main code here
