@@ -176,12 +176,12 @@ CreateADAccount()
 MigrateAccount()
 {
 	# Move existing user data
-	/bin/mv -f /Users/$username/ /Users/$adusername/
+	/bin/mv -f /Users/$username /Users/$adusername
 
 	# Fix new user folder permissions
 
 	/usr/sbin/chown -R $adusername:"$domain\Domain Users" /Users/$adusername
-	/bin/chmod 755 /Users/$username
+	/bin/chmod 755 /Users/$adusername
 	/bin/chmod -R 700 /Users/$adusername/Desktop/
 	/bin/chmod -R 700 /Users/$adusername/Documents/
 	/bin/chmod -R 700 /Users/$adusername/Downloads/
