@@ -198,7 +198,7 @@ MigrateAccount()
 	# Add new user to FileVault 2
 	/usr/bin/fdesetup add -usertoadd $adusername
 	
-	/usr/bin/expect <<EOF
+	/usr/bin/expect << EOF
 	expect "Enter a password for '/', or the recovery key:"
 	send "$LocalAdminPW\r"
 	expect "Enter the password for the added user '$aduser':"
