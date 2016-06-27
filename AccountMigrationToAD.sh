@@ -2,8 +2,6 @@
 
 # Script to migrate local accounts to Active Directory accounts
 
-# Author : <richard @ richard - purves dot com>
-
 # Define variables here
 
 export errorcode=0
