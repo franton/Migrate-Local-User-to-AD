@@ -183,16 +183,16 @@ MigrateAccount()
 
 	# Fix new user folder permissions
 
-	chown -R $username:"$domain\Domain Users" /Users/$username
+	chown -R $adusername:"$domain\Domain Users" /Users/$adusername
 	chmod 755 /Users/$username
-	chmod -R 700 /Users/$username/Desktop/
-	chmod -R 700 /Users/$username/Documents/
-	chmod -R 700 /Users/$username/Downloads/
-	chmod -R 700 /Users/$username/Library/
-	chmod -R 700 /Users/$username/Movies/
-	chmod -R 700 /Users/$username/Pictures/
-	chmod 755 /Users/$username/Public/
-	chmod -R 733 /Users/$username/Public/Drop\ Box/
+	chmod -R 700 /Users/$adusername/Desktop/
+	chmod -R 700 /Users/$adusername/Documents/
+	chmod -R 700 /Users/$adusername/Downloads/
+	chmod -R 700 /Users/$adusername/Library/
+	chmod -R 700 /Users/$adusername/Movies/
+	chmod -R 700 /Users/$adusername/Pictures/
+	chmod 755 /Users/$adusername/Public/
+	chmod -R 733 /Users/$adusername/Public/Drop\ Box/
 
 	# Delete original account
 	/usr/bin/dscl . -delete "/Users/$username"
