@@ -5,7 +5,12 @@
 # Define variables here
 
 export errorcode=0
-export LocalAdminPW="$3"
+
+if [ ! -e /usr/local/cs/misc/tmpfile ];
+then
+	export LocalAdminPW="$3"
+	/bin/cat $LocalAdminPW > /usr/local/cs/misc/tmpfile
+fi
 
 export loggedinuser=$( python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");' )
 
@@ -45,7 +50,7 @@ CD()
 
 AreWeADBound()
 {
-	adbound=$( /usr/bin/dscl localhost -list . | grep "Active Directory" )
+	adbound=$( /usr/bin/dscl . -list . | grep "Active Directory" )
 	
 	if [ "${adbound}" != "Active Directory" ];
 	then
@@ -195,6 +200,12 @@ MigrateAccount()
 	/usr/bin/dscl . -delete "/Users/$username"
 	/bin/rm -rf /Users/$username
 
+	if [ -e /usr/local/cs/misc/tmpfile ];
+	then
+		LocalAdminPW=$( /bin/cat /usr/local/cs/misc/tmpfile )
+		/usr/bin/rm -f /usr/local/cs/misc/tmpfile
+	fi
+
 	# Add new user to FileVault 2
 	/usr/bin/fdesetup add -usertoadd $adusername
 	
@@ -204,13 +215,12 @@ MigrateAccount()
 	expect "Enter the password for the added user '$aduser':"
 	send "$adpassword\r"
 	EOF
-
 }
 
 CleanUpBootstrap()
 {
-	/usr/bin/srm /Library/LaunchAgent/com.cs.accountmigrate-bootstrap.plist
-	/usr/bin/srm /private/tmp/AccountMigrationToAd.sh
+	/usr/bin/rm -f /Library/LaunchAgent/com.cs.accountmigrate-bootstrap.plist
+	/usr/bin/rm -f /private/tmp/AccountMigrationToAd.sh
 }
 
 Reboot()
