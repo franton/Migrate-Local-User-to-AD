@@ -149,7 +149,7 @@ GetADAccountDetails()
 		adusername=$( CD "inputbox" "AD Account" "Please enter your AD Username:" "" "Ok" )
 		adpassword=$( CD "inputbox" "AD Password" "Please enter your AD Password:" "" "Ok" )
 	
-		arewesure=$( CD "msgbox" "$adusername @adpassword" "Is this information correct?" "Warning" "Yes" "No" )
+		arewesure=$( CD "msgbox" "$adusername $adpassword" "Is this information correct?" "Warning" "Yes" "No" )
 		
 		if [ "$arewesure" = "1" ];
 		then
