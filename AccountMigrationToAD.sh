@@ -163,28 +163,15 @@ GetADAccountDetails()
 	done
 }
 
-CreateADAccount()
-{
-	# Make new user folder with correct permissions in /Users
-	/bin/mkdir /Users/$adusername
-	/usr/sbin/chown -R $adusername /Users/$adusername
-
-	# Use an macOS command to create the mobile account user record
-	/System/Library/CoreServices/ManagedClient.app/Contents/Resources/createmobileaccount –v –P –n $adusername
-
-	# The user home folder we created will be totally blank. Get the OS to copy from the User Template.
-	# Start by deleting the folder we just created (!) then using another OS tool to do the work.
-	/bin/rm -r /Users/$adusername
-	/usr/sbin/createhomedir -c -u $adusername
-}
-
 MigrateAccount()
 {
-	# Move existing user data
+	# Delete the local account record ONLY
+	/usr/bin/dscl . delete /Users/$username
+
+	# Rename existing user folder
 	/bin/mv -f /Users/$username /Users/$adusername
 
 	# Fix new user folder permissions
-
 	/usr/sbin/chown -R $adusername:"$domain\Domain Users" /Users/$adusername
 	/bin/chmod 755 /Users/$adusername
 	/bin/chmod -R 700 /Users/$adusername/Desktop/
@@ -196,9 +183,8 @@ MigrateAccount()
 	/bin/chmod 755 /Users/$adusername/Public/
 	/bin/chmod -R 733 /Users/$adusername/Public/Drop\ Box/
 
-	# Delete original account
-	/usr/bin/dscl . -delete "/Users/$username"
-	/bin/rm -rf /Users/$username
+	# Use an macOS command to create the mobile account user record
+	/System/Library/CoreServices/ManagedClient.app/Contents/Resources/createmobileaccount –v –P –n $adusername
 
 	if [ -e /usr/local/cs/misc/tmpfile ];
 	then
@@ -241,7 +227,6 @@ then
 		LoggedIn
 		SelectAccounts
 		GetADAccountDetails
-		CreateADAccount
 		MigrateAccount
 		CleanUpBootstrap
 		Reboot
